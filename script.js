@@ -93,7 +93,7 @@ roleBtn.onclick = () => {
     auth.signOut();
 };
 
-// 7. DATA FEED (The Real-Time Engine)
+// --- SECTION 7: DATA FEED (Updated with Image Support) ---
 function setupRealtimeFeed() {
     db.collection("announcements").orderBy("timestamp", "desc")
         .onSnapshot(snapshot => {
@@ -107,6 +107,9 @@ function setupRealtimeFeed() {
                 const id = doc.id;
                 const time = data.timestamp ? data.timestamp.toDate().toLocaleString() : "Just now";
                 
+                // 1. Create the image HTML if a link exists in the database
+                const imageTag = data.image ? `<img src="${data.image}" class="feed-img">` : '';
+
                 const deleteBtn = (userRole === 'teacher') 
                     ? `<button onclick="deleteMsg('${id}')" class="delete-btn">Delete</button>` 
                     : '';
@@ -115,7 +118,7 @@ function setupRealtimeFeed() {
                     <div class="card">
                         <small>Update • ${time}</small>
                         <p>${data.text}</p>
-                        ${deleteBtn}
+                        ${imageTag} ${deleteBtn}
                     </div>
                 `);
             });
@@ -191,5 +194,6 @@ counter.style.color = "#888";
 sendBtn.disabled = false;
 }
 });
+
 
 
