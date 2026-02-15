@@ -168,4 +168,19 @@ function applyRoleUI() {
         teacherTools.classList.add('hidden');
         roleBtn.innerText = "Logout (Parent)";
     }
+
 }
+
+// 11. CHARACTER COUNTER LOGIC
+msgInput.addEventListener('input', () => {
+const length = msgInput.value.length;
+const counter = document.getElementById('charCounter');
+counter.innerText = length + " / 280";
+if (length > 280) {
+counter.style.color = "red";
+sendBtn.disabled = true;
+} else {
+counter.style.color = "#888";
+sendBtn.disabled = false;
+}
+});
