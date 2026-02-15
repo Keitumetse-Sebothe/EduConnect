@@ -122,33 +122,50 @@ function setupRealtimeFeed() {
         });
 }
 
-// 8. SEND MESSAGE LISTENER (With Success Animation)
-sendBtn.addEventListener('click', () => {
+// 8. SEND MESSAGE LISTENER (With Photo Upload Support)
+const imgInput = document.getElementById('imgInput');
+
+sendBtn.addEventListener('click', async () => {
     const text = msgInput.value.trim();
-    if (text) {
-        // UI Feedback: Start
+    const file = imgInput.files[0];
+    
+    if (text || file) {
         sendBtn.disabled = true;
-        sendBtn.innerText = "Sending...";
+        sendBtn.innerText = "Uploading...";
 
-        db.collection("announcements").add({
-            text: text,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(() => {
-            // UI Feedback: Success Animation
+        let imageUrl = null;
+
+        try {
+            // 1. If there's a photo, upload it to Firebase Storage
+            if (file) {
+                const storageRef = firebase.storage().ref('images/' + Date.now() + "_" + file.name);
+                const snapshot = await storageRef.put(file);
+                imageUrl = await snapshot.ref.getDownloadURL();
+            }
+
+            // 2. Save everything to Firestore
+            await db.collection("announcements").add({
+                text: text,
+                image: imageUrl, // Stores the link to the photo
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            // 3. UI Success Feedback
             sendBtn.innerHTML = "✓ Sent!";
-            sendBtn.classList.add('btn-success', 'pulse');
             msgInput.value = "";
-
+            imgInput.value = ""; // Clear the file picker
+            
             setTimeout(() => {
                 sendBtn.disabled = false;
                 sendBtn.innerHTML = "Broadcast to Parents";
-                sendBtn.classList.remove('btn-success', 'pulse');
             }, 2000);
-        }).catch(err => {
-            alert("Error: " + err.message);
+
+        } catch (error) {
+            console.error(error);
+            alert("Upload failed: " + error.message);
             sendBtn.disabled = false;
             sendBtn.innerText = "Broadcast to Parents";
-        });
+        }
     }
 });
 
@@ -184,3 +201,4 @@ counter.style.color = "#888";
 sendBtn.disabled = false;
 }
 });
+
