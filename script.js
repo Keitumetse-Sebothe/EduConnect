@@ -93,32 +93,46 @@ roleBtn.onclick = () => {
     auth.signOut();
 };
 
-// --- SECTION 7: DATA FEED (Updated with Image Support) ---
+// --- SECTION 7: DATA FEED (With Image & Like Support) ---
 function setupRealtimeFeed() {
+    const container = document.getElementById('announcements-container');
+
     db.collection("announcements").orderBy("timestamp", "desc")
         .onSnapshot(snapshot => {
             container.innerHTML = "";
+            
             if (snapshot.empty) {
                 container.innerHTML = `<p style="text-align:center;color:#888;">No updates yet.</p>`;
                 return;
             }
+
             snapshot.forEach(doc => {
                 const data = doc.data();
                 const id = doc.id;
                 const time = data.timestamp ? data.timestamp.toDate().toLocaleString() : "Just now";
                 
-                // 1. Create the image HTML if a link exists in the database
+                // 1. Image logic
                 const imageTag = data.image ? `<img src="${data.image}" class="feed-img">` : '';
-
+                
+                // 2. Like logic (starts at 0 if the post is new)
+                const likes = data.likes || 0; 
+                const likeBtn = `<button onclick="likeMsg('${id}', ${likes})" class="like-btn">❤️ <span>${likes}</span></button>`;
+                
+                // 3. Delete logic (Teacher only)
                 const deleteBtn = (userRole === 'teacher') 
                     ? `<button onclick="deleteMsg('${id}')" class="delete-btn">Delete</button>` 
                     : '';
 
+                // 4. Combine everything into the card
                 container.insertAdjacentHTML('beforeend', `
                     <div class="card">
                         <small>Update • ${time}</small>
                         <p>${data.text}</p>
-                        ${imageTag} ${deleteBtn}
+                        ${imageTag}
+                        <div class="card-footer">
+                            ${likeBtn} 
+                            ${deleteBtn}
+                        </div>
                     </div>
                 `);
             });
@@ -194,6 +208,20 @@ counter.style.color = "#888";
 sendBtn.disabled = false;
 }
 });
+
+// ---12: LIKE FUNCTION ---
+async function likeMsg(id, currentLikes) {
+    try {
+        // This tells Firebase: "Find this specific post and change the likes count"
+        await db.collection("announcements").doc(id).update({
+            likes: currentLikes + 1
+        });
+        console.log("Liked!");
+    } catch (error) {
+        console.error("Error updating likes:", error);
+    }
+}
+
 
 
 
