@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduConnect | Cloud Edition</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="auth-screen" class="auth-overlay">
+        <div class="auth-box">
+            <h2>EduConnect Login</h2>
+            <p>Enter your details to access the classroom</p>
+            
+            <input type="email" id="emailInput" placeholder="School Email">
+            <input type="password" id="passInput" placeholder="Password">
+            
+            <div class="auth-buttons">
+            <button id="loginBtn">
+               <span id="loginSpinner" class="spinner hidden"></span>
+               <span id="loginText">Sign In</span>
+            </button>
+
+            <button id="registerBtn" class="outline">
+               <span id="regSpinner" class="spinner hidden"></span>
+               <span id="regText">Create Account</span>
+           </button>
+                <p class="toggle-text"><a href="#" id="forgotPassLink" style="color: #4A90E2; font-size: 0.8rem;">Forgot Password?</a></p>
+            </div>
+            
+            <p class="toggle-text">I am a: 
+                <select id="roleSelect">
+                    <option value="teacher">Teacher</option>
+                    <option value="parent">Parent</option>
+                </select>
+            </p>
+        </div>
+    </div>
+
+    <nav>
+        <div class="nav-content">
+            <div class="logo"><strong>EduConnect</strong></div>
+            <button id="roleBtn" class="nav-link">Logout</button>
+        </div>
+    </nav>
+
+    <main>
+        <section id="teacher-tools" class="post-box hidden">
+            <h3>New Announcement</h3>
+            <textarea id="msgInput" rows="3" placeholder="What's happening in class today?"></textarea>
+            <input type="text" id="imgInput" placeholder="Image URL (optional)" class="media-input">
+            
+        <div class="input-footer">
+             <span id="charCounter">0 / 280</span>
+            <button id="sendBtn">
+             <span id="sendText">Broadcast to Parents</span>
+          </button>
+        </div>
+        </section>
+
+        <section id="feed-container">
+            <h3>Classroom Updates</h3>
+            <div id="message-container">
+                </div>
+        </section>
+    </main>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
