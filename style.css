@@ -317,4 +317,24 @@ button:disabled {
 
 .pulse {
     animation: pulse 1.5s infinite;
+
+}
+
+.file-label {
+    display: inline-block;
+    padding: 8px 15px;
+    background: #f0f2f5;
+    border-radius: 20px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.file-label:hover { background: #e4e6e9; }
+
+#file-preview img {
+    max-width: 100px;
+    border-radius: 8px;
+    margin-bottom: 10px;
 }
