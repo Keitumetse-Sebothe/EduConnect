@@ -16,17 +16,19 @@ const db = firebase.firestore();
 
 // 2. ELEMENT SELECTORS
 const authScreen = document.getElementById('auth-screen');
-const teacherTools = document.getElementById('teacher-tools');
-const container = document.getElementById('message-container');
+const teacherTools = document.getElementById('teacher-tools'); // Corrected to match your HTML
 const roleBtn = document.getElementById('roleBtn');
-const sendBtn = document.getElementById('sendBtn');
 const msgInput = document.getElementById('msgInput');
+const imgUrlInput = document.getElementById('imgUrlInput');
+const sendBtn = document.getElementById('sendBtn');
+const sendText = document.getElementById('sendText');
+const charCounter = document.getElementById('charCounter');
 const forgotPassLink = document.getElementById('forgotPassLink');
 
 // State Management
 let userRole = localStorage.getItem('userRole') || 'parent';
 
-// 3. AUTHENTICATION WATCHER (Handles Refreshing)
+// 3. AUTHENTICATION WATCHER
 auth.onAuthStateChanged(user => {
     if (user) {
         console.log("Welcome:", user.email);
@@ -35,26 +37,25 @@ auth.onAuthStateChanged(user => {
         setupRealtimeFeed();
     } else {
         authScreen.style.display = 'flex';
-        container.innerHTML = "";
+        const feed = document.getElementById('announcements-container');
+        if (feed) feed.innerHTML = "";
     }
 });
 
-// 4. AUTHENTICATION HANDLERS (Login/Register)
+// 4. AUTHENTICATION HANDLERS
 window.handleAuth = (type) => {
     const email = document.getElementById('emailInput').value;
     const pass = document.getElementById('passInput').value;
     
-    // Select UI feedback elements
     const btn = type === 'register' ? document.getElementById('registerBtn') : document.getElementById('loginBtn');
     const spinner = type === 'register' ? document.getElementById('regSpinner') : document.getElementById('loginSpinner');
     const btnText = type === 'register' ? document.getElementById('regText') : document.getElementById('loginText');
 
     if (!email || !pass) return alert("Please fill in all fields.");
 
-    // Start Loading State
     btn.disabled = true;
-    spinner.classList.remove('hidden');
-    btnText.innerText = type === 'register' ? "Creating..." : "Signing in...";
+    if (spinner) spinner.classList.remove('hidden');
+    if (btnText) btnText.innerText = type === 'register' ? "Creating..." : "Signing in...";
 
     userRole = document.getElementById('roleSelect').value;
     localStorage.setItem('userRole', userRole);
@@ -64,38 +65,36 @@ window.handleAuth = (type) => {
         : auth.signInWithEmailAndPassword(email, pass);
 
     authAction.catch(e => {
-        // Reset UI on Error
         btn.disabled = false;
-        spinner.classList.add('hidden');
-        btnText.innerText = type === 'register' ? "Create Account" : "Sign In";
+        if (spinner) spinner.classList.add('hidden');
+        if (btnText) btnText.innerText = type === 'register' ? "Create Account" : "Sign In";
         alert(e.message);
     });
 };
 
-// Manual Button Triggers
 document.getElementById('registerBtn').onclick = () => window.handleAuth('register');
 document.getElementById('loginBtn').onclick = () => window.handleAuth('login');
 
-// 5. FORGOT PASSWORD LISTENER
+// 5. FORGOT PASSWORD
 forgotPassLink.addEventListener('click', (e) => {
     e.preventDefault();
     const email = document.getElementById('emailInput').value;
     if (!email) return alert("Enter your email first!");
-
     auth.sendPasswordResetEmail(email)
         .then(() => alert("Reset link sent to " + email))
         .catch(err => alert(err.message));
 });
 
-// 6. LOGOUT LOGIC
+// 6. LOGOUT
 roleBtn.onclick = () => {
     localStorage.removeItem('userRole');
     auth.signOut();
 };
 
-// --- SECTION 7: DATA FEED (With Image & Like Support) ---
+// 7. DATA FEED (The Real-Time Engine)
 function setupRealtimeFeed() {
     const container = document.getElementById('announcements-container');
+    if (!container) return;
 
     db.collection("announcements").orderBy("timestamp", "desc")
         .onSnapshot(snapshot => {
@@ -111,19 +110,14 @@ function setupRealtimeFeed() {
                 const id = doc.id;
                 const time = data.timestamp ? data.timestamp.toDate().toLocaleString() : "Just now";
                 
-                // 1. Image logic
                 const imageTag = data.image ? `<img src="${data.image}" class="feed-img">` : '';
-                
-                // 2. Like logic (starts at 0 if the post is new)
                 const likes = data.likes || 0; 
                 const likeBtn = `<button onclick="likeMsg('${id}', ${likes})" class="like-btn">❤️ <span>${likes}</span></button>`;
                 
-                // 3. Delete logic (Teacher only)
                 const deleteBtn = (userRole === 'teacher') 
                     ? `<button onclick="deleteMsg('${id}')" class="delete-btn">Delete</button>` 
                     : '';
 
-                // 4. Combine everything into the card
                 container.insertAdjacentHTML('beforeend', `
                     <div class="card">
                         <small>Update • ${time}</small>
@@ -139,51 +133,65 @@ function setupRealtimeFeed() {
         });
 }
 
-// 8. SEND MESSAGE LISTENER (Using Image Links)
-const imgUrlInput = document.getElementById('imgUrlInput');
-
+// 8. SEND MESSAGE
 sendBtn.addEventListener('click', async () => {
     const text = msgInput.value.trim();
-    const imageUrl = imgUrlInput.value.trim(); // Grab the link from the box
+    const imageUrl = imgUrlInput.value.trim();
     
     if (text || imageUrl) {
         sendBtn.disabled = true;
-        sendBtn.innerText = "Posting...";
+        sendText.innerText = "Posting...";
 
         try {
-            // Save text and the link directly to Firestore
             await db.collection("announcements").add({
                 text: text,
-                image: imageUrl, // Just the link string
+                image: imageUrl,
+                likes: 0,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
 
-            // Success feedback
-            sendBtn.innerHTML = "✓ Sent!";
+            // Success Visuals
+            sendBtn.style.backgroundColor = "#28a745"; 
+            sendText.innerHTML = "✓ Sent!";
+            
             msgInput.value = "";
-            imgUrlInput.value = ""; // Clear the link box
+            imgUrlInput.value = "";
+            charCounter.innerText = "0 / 280";
             
             setTimeout(() => {
                 sendBtn.disabled = false;
-                sendBtn.innerHTML = "Broadcast to Parents";
+                sendBtn.style.backgroundColor = ""; 
+                sendText.innerHTML = "Broadcast to Parents";
             }, 2000);
 
         } catch (error) {
-            alert("Error: " + error.message);
+            console.error("Error:", error);
+            alert("Oops! Message didn't send.");
             sendBtn.disabled = false;
-            sendBtn.innerText = "Broadcast to Parents";
+            sendText.innerText = "Broadcast to Parents";
         }
     }
 });
 
-// 9. GLOBAL DELETE FUNCTION
+// 9. DELETE FUNCTION
 window.deleteMsg = (id) => {
     if(confirm("Permanently delete this?")) {
         db.collection("announcements").doc(id).delete();
     }
 };
 
-// 10. UI UTILITY
+// 10. LIKE FUNCTION
+window.likeMsg = async (id, currentLikes) => {
+    try {
+        await db.collection("announcements").doc(id).update({
+            likes: currentLikes + 1
+        });
+    } catch (error) {
+        console.error("Error liking:", error);
+    }
+};
+
+// 11. UI UTILITY
 function applyRoleUI() {
     if (userRole === 'teacher') {
         teacherTools.classList.remove('hidden');
@@ -192,35 +200,21 @@ function applyRoleUI() {
         teacherTools.classList.add('hidden');
         roleBtn.innerText = "Logout (Parent)";
     }
-
 }
 
-// 11. CHARACTER COUNTER LOGIC
+// 12. CHARACTER COUNTER
 msgInput.addEventListener('input', () => {
-const length = msgInput.value.length;
-const counter = document.getElementById('charCounter');
-counter.innerText = length + " / 280";
-if (length > 280) {
-counter.style.color = "red";
-sendBtn.disabled = true;
-} else {
-counter.style.color = "#888";
-sendBtn.disabled = false;
-}
+    const length = msgInput.value.length;
+    charCounter.innerText = length + " / 280";
+    if (length > 280) {
+        charCounter.style.color = "red";
+        sendBtn.disabled = true;
+    } else {
+        charCounter.style.color = "#888";
+        sendBtn.disabled = false;
+    }
 });
 
-// ---12: LIKE FUNCTION ---
-async function likeMsg(id, currentLikes) {
-    try {
-        // This tells Firebase: "Find this specific post and change the likes count"
-        await db.collection("announcements").doc(id).update({
-            likes: currentLikes + 1
-        });
-        console.log("Liked!");
-    } catch (error) {
-        console.error("Error updating likes:", error);
-    }
-}
 
 
 
