@@ -320,21 +320,31 @@ button:disabled {
 
 }
 
-.file-label {
-    display: inline-block;
-    padding: 8px 15px;
-    background: #f0f2f5;
-    border-radius: 20px;
-    cursor: pointer;
-    margin-bottom: 10px;
-    font-size: 0.9rem;
-    color: #555;
+/* --- New Image Link Styles --- */
+.url-input-container {
+    margin: 10px 0;
 }
 
-.file-label:hover { background: #e4e6e9; }
-
-#file-preview img {
-    max-width: 100px;
+#imgUrlInput {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
     border-radius: 8px;
-    margin-bottom: 10px;
+    font-size: 0.9rem;
+    outline: none;
+    box-sizing: border-box; /* Makes sure padding doesn't push it off screen */
 }
+
+#imgUrlInput:focus {
+    border-color: #007bff;
+    background-color: #f8fbff;
+}
+
+/* This is for the image when it appears in the parent's feed */
+.card img {
+    width: 100%;
+    border-radius: 10px;
+    margin-top: 10px;
+    display: block;
+}
+
