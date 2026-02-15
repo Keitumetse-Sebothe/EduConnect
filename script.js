@@ -122,38 +122,29 @@ function setupRealtimeFeed() {
         });
 }
 
-// 8. SEND MESSAGE LISTENER (With Photo Upload Support)
-const imgInput = document.getElementById('imgInput');
+// 8. SEND MESSAGE LISTENER (Using Image Links)
+const imgUrlInput = document.getElementById('imgUrlInput');
 
 sendBtn.addEventListener('click', async () => {
     const text = msgInput.value.trim();
-    const file = imgInput.files[0];
+    const imageUrl = imgUrlInput.value.trim(); // Grab the link from the box
     
-    if (text || file) {
+    if (text || imageUrl) {
         sendBtn.disabled = true;
-        sendBtn.innerText = "Uploading...";
-
-        let imageUrl = null;
+        sendBtn.innerText = "Posting...";
 
         try {
-            // 1. If there's a photo, upload it to Firebase Storage
-            if (file) {
-                const storageRef = firebase.storage().ref('images/' + Date.now() + "_" + file.name);
-                const snapshot = await storageRef.put(file);
-                imageUrl = await snapshot.ref.getDownloadURL();
-            }
-
-            // 2. Save everything to Firestore
+            // Save text and the link directly to Firestore
             await db.collection("announcements").add({
                 text: text,
-                image: imageUrl, // Stores the link to the photo
+                image: imageUrl, // Just the link string
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
 
-            // 3. UI Success Feedback
+            // Success feedback
             sendBtn.innerHTML = "✓ Sent!";
             msgInput.value = "";
-            imgInput.value = ""; // Clear the file picker
+            imgUrlInput.value = ""; // Clear the link box
             
             setTimeout(() => {
                 sendBtn.disabled = false;
@@ -161,8 +152,7 @@ sendBtn.addEventListener('click', async () => {
             }, 2000);
 
         } catch (error) {
-            console.error(error);
-            alert("Upload failed: " + error.message);
+            alert("Error: " + error.message);
             sendBtn.disabled = false;
             sendBtn.innerText = "Broadcast to Parents";
         }
@@ -201,4 +191,5 @@ counter.style.color = "#888";
 sendBtn.disabled = false;
 }
 });
+
 
