@@ -340,11 +340,13 @@ button:disabled {
     background-color: #f8fbff;
 }
 
-/* This is for the image when it appears in the parent's feed */
-.card img {
+.feed-img {
     width: 100%;
+    max-height: 400px;
+    object-fit: cover; /* Keeps the image from looking squished */
     border-radius: 10px;
     margin-top: 10px;
     display: block;
 }
+
 
