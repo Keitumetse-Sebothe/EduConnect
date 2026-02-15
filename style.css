@@ -349,4 +349,30 @@ button:disabled {
     display: block;
 }
 
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px solid #eee;
+}
+
+.like-btn {
+    background: #fff0f0;
+    border: 1px solid #ffcccc;
+    color: #ff4d4d;
+    padding: 5px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: transform 0.2s;
+}
+
+.like-btn:hover {
+    transform: scale(1.1);
+    background: #ffebeb;
+}
+
+
 
