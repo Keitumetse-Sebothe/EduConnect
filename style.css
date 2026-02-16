@@ -1,3 +1,4 @@
+/* --- SECTION 1: THE BASICS --- */
 :root {
     --primary: #2c3e50;
     --accent: #3498db;
@@ -15,8 +16,8 @@ body {
     line-height: 1.5;
 }
 
-/* Navigation */
-nav {
+/* --- SECTION 2: NAVIGATION --- */
+header {
     background: var(--primary);
     color: var(--white);
     padding: 0.5rem 1rem;
@@ -26,7 +27,7 @@ nav {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.nav-content {
+.nav-container {
     max-width: 600px;
     margin: 0 auto;
     display: flex;
@@ -34,28 +35,68 @@ nav {
     align-items: center;
 }
 
-.role-toggle {
+#roleBtn {
     background: rgba(255,255,255,0.15);
+    color: white;
+    border: none;
     padding: 6px 15px;
     border-radius: 20px;
     cursor: pointer;
     font-size: 0.8rem;
-    font-weight: 500;
     transition: 0.3s;
 }
 
-.role-toggle:hover {
-    background: rgba(255,255,255,0.25);
+/* --- SECTION 3: AUTH SCREEN (Login) --- */
+#auth-screen {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: var(--primary);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
 }
 
-/* Layout */
+.auth-card {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 350px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+.auth-card input, .auth-card select {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-sizing: border-box;
+}
+
+#loginBtn, #registerBtn {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+#loginBtn { background: var(--accent); color: white; }
+#registerBtn.secondary { background: #eee; color: #555; }
+
+/* --- SECTION 4: TEACHER TOOLS --- */
 main {
     max-width: 600px;
     margin: 0 auto;
     padding: 20px;
 }
 
-/* Teacher Post Box */
 .post-box {
     background: var(--white);
     padding: 20px;
@@ -63,8 +104,6 @@ main {
     box-shadow: 0 4px 15px rgba(0,0,0,0.05);
     margin-bottom: 25px;
 }
-
-h3 { margin-top: 0; color: var(--primary); }
 
 textarea {
     width: 100%;
@@ -74,35 +113,15 @@ textarea {
     font-size: 1rem;
     resize: none;
     box-sizing: border-box;
-    font-family: inherit;
 }
 
-.input-footer {
+.target-selection, #class-picker {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 10px;
+    gap: 10px;
+    margin-bottom: 10px;
 }
 
-#charCounter {
-    font-size: 0.8rem;
-    color: #888;
-}
-
-#sendBtn {
-    background: var(--accent);
-    color: white;
-    border: none;
-    padding: 10px 25px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: transform 0.1s;
-}
-
-#sendBtn:active { transform: scale(0.98); }
-
-/* Feed & Cards */
+/* --- SECTION 5: THE FEED & CARDS --- */
 .card {
     background: var(--white);
     padding: 18px;
@@ -110,7 +129,6 @@ textarea {
     margin-bottom: 15px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     border-left: 6px solid var(--accent);
-    /* Phase 3 Animation */
     animation: slideUp 0.4s ease-out forwards;
 }
 
@@ -119,288 +137,15 @@ textarea {
     to { opacity: 1; transform: translateY(0); }
 }
 
-.card small {
-    display: block;
-    color: #777;
-    font-size: 0.75rem;
-    margin-bottom: 8px;
-}
-
-.card p { margin: 0; font-size: 1rem; }
-
-/* Delete Button */
-.delete-btn {
-    background: none;
-    border: 1px solid var(--danger);
-    color: var(--danger);
-    padding: 4px 10px;
-    font-size: 0.7rem;
-    border-radius: 5px;
-    margin-top: 12px;
-    cursor: pointer;
-    width: auto; /* Overrides default full-width buttons */
-}
-
-.delete-btn:hover {
-    background: var(--danger);
-    color: white;
-}
-
-/* Utilities */
-.hidden { display: none; }
-
-.card-img {
-    width: 100%;
-    border-radius: 8px;
-    margin-top: 12px;
-    max-height: 250px;
-    object-fit: cover;
-    display: block;
-}
-
-#clearAllBtn:hover {
-    color: var(--danger) !important;
-    border-color: var(--danger) !important;
-}
-
-.media-input {
-    margin-top: 10px;
-    width: 100%;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-    padding: 8px;
-    box-sizing: border-box;
-    font-size: 0.85rem;
-}
-
-.secondary-btn {
-    background: none;
-    color: #888;
-    font-size: 0.75rem;
-    border: 1px dashed #ccc;
-    margin-top: 20px;
-    cursor: pointer;
-    width: 100%;
-    padding: 8px;
-    border-radius: 8px;
-}
-
-/* Auth Overlay - Covers the whole screen */
-.auth-overlay {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: var(--primary);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 2000; /* Stays on top of everything */
-}
-
-.auth-box {
-    background: white;
-    padding: 40px;
-    border-radius: 15px;
-    width: 90%;
-    max-width: 400px;
-    text-align: center;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-}
-
-.auth-box input {
-    width: 100%;
-    padding: 12px;
-    margin: 10px 0;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-sizing: border-box;
-}
-
-.auth-buttons {
-    margin-top: 20px;
-}
-
-.outline {
-    background: none !important;
-    color: var(--accent) !important;
-    border: 2px solid var(--accent) !important;
-    margin-top: 10px;
-}
-
-.auth-overlay {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: #4A90E2; /* Primary blue */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-}
-
-.auth-box {
-    background: white;
-    padding: 30px;
-    border-radius: 12px;
-    text-align: center;
-    width: 320px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-}
-
-.auth-box input, .auth-box select {
-    width: 100%;
-    margin: 10px 0;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-}
-
-.hidden { display: none; }
-
-.delete-btn {
-    background: #ff4d4d;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.7rem;
-    margin-top: 10px;
-}
-
-/* The Spinner Shape */
-.spinner {
-    width: 20px;
-    height: 20px;
-    border: 3px solid rgba(255,255,255,0.3);
-    border-radius: 50%;
-    border-top-color: #fff;
-    animation: spin 1s ease-in-out infinite;
-    display: inline-block;
-    vertical-align: middle;
-    margin-right: 8px;
-}
-
-/* The Animation */
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-
-/* Class to hide the spinner when not needed */
-.hidden { display: none !important; }
-
-/* Disable button while loading */
-button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-}
-
-/* Success State for the Button */
-.btn-success {
-    background-color: #28a745 !important;
-    transform: scale(1.05);
-    transition: all 0.3s ease;
-}
-
-/* Success Checkmark Icon (Optional) */
-.checkmark {
-    margin-right: 8px;
-    font-weight: bold;
-}
-
-/* Pulse animation */
-@keyframes pulse {
-    0% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.4); }
-    70% { box-shadow: 0 0 0 10px rgba(40, 167, 69, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
-}
-
-.pulse {
-    animation: pulse 1.5s infinite;
-}
-
-.url-input-container {
-    margin: 10px 0;
-}
-
-#imgUrlInput {
-    width: 100%;
-    padding: 8px 12px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    outline: none;
-}
-
-#imgUrlInput:focus {
-    border-color: #007bff;
-}
-
-.feed-img {
-    width: 100%;
-    max-height: 400px;
-    object-fit: cover; 
-    border-radius: 8px;
-    margin: 10px 0;
-    display: block;
-}
-
-.card-footer {
-    display: flex;
-    justify-content: space-between; /* Like on left, Delete on right */
-    align-items: center;
-    margin-top: 15px;
-    padding-top: 10px;
-    border-top: 1px solid #eee;
-}
-
-.like-btn {
-    background: #fff0f0;
-    border: 1px solid #ffcccc;
-    color: #ff4d4d;
-    padding: 6px 12px;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    font-weight: bold;
-    transition: transform 0.2s, background 0.2s;
-}
-
-.like-btn:hover {
-    background: #ffebeb;
-    transform: scale(1.05);
-}
-
-.delete-btn {
-    background: none;
-    border: none;
-    color: #888;
-    cursor: pointer;
-    font-size: 0.8rem;
-    text-decoration: underline;
-}
-
-.delete-btn:hover {
-    color: #ff4d4d;
-}
-
-#sendBtn {
-    transition: background-color 0.4s ease;
-}
-
-/* --- SECTION 12: UI COMPONENTS --- */
-
 .badge {
-    background-color: #e8f0fe; /* Light professional blue */
-    color: #1a73e8;            /* Google-style blue */
+    background-color: #e8f0fe;
+    color: #1a73e8;
     padding: 4px 12px;
-    border-radius: 15px;       /* Rounded pill shape */
+    border-radius: 15px;
     font-size: 0.7rem;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
     display: inline-block;
-    margin-bottom: 8px;
 }
 
 .card-header {
@@ -410,15 +155,31 @@ button:disabled {
     margin-bottom: 10px;
 }
 
-.target-selection, #class-picker {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 10px;
+.feed-img {
+    width: 100%;
+    max-height: 400px;
+    object-fit: cover; 
+    border-radius: 8px;
+    margin: 10px 0;
 }
 
-.target-selection select, #class-picker select {
-    flex: 1;
-    padding: 8px;
-    border-radius: 5px;
-    border: 1px solid #ddd;
+/* --- SECTION 6: BUTTON STATES & UTILS --- */
+.hidden { display: none !important; }
+
+.like-btn {
+    background: #fff0f0;
+    border: 1px solid #ffcccc;
+    color: #ff4d4d;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.delete-btn {
+    background: none;
+    border: none;
+    color: #888;
+    text-decoration: underline;
+    cursor: pointer;
 }
