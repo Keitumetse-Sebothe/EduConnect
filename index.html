@@ -3,80 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduConnect | Cloud Edition</title>
+    <title>EduConnect</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div id="auth-screen" class="auth-overlay">
-        <div class="auth-box">
-            <h2>EduConnect Login</h2>
-            <p>Enter your details to access the classroom</p>
-            
-            <input type="email" id="emailInput" placeholder="School Email">
+    <div id="auth-screen">
+        <div class="auth-card">
+            <h1>EduConnect</h1>
+            <input type="email" id="emailInput" placeholder="Email">
             <input type="password" id="passInput" placeholder="Password">
             
-            <div class="auth-buttons">
-            <button id="loginBtn">
-               <span id="loginSpinner" class="spinner hidden"></span>
-               <span id="loginText">Sign In</span>
-            </button>
-
-            <button id="registerBtn" class="outline">
-               <span id="regSpinner" class="spinner hidden"></span>
-               <span id="regText">Create Account</span>
-           </button>
-                <p class="toggle-text"><a href="#" id="forgotPassLink" style="color: #4A90E2; font-size: 0.8rem;">Forgot Password?</a></p>
-            </div>
-            
-            <p class="toggle-text">I am a: 
+            <div class="auth-options">
                 <select id="roleSelect">
-                    <option value="teacher">Teacher</option>
                     <option value="parent">Parent</option>
+                    <option value="teacher">Teacher</option>
                 </select>
-            </p>
+
+                <div id="class-picker">
+                    <select id="regGrade">
+                        </select>
+                    <select id="regClass">
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                        <option value="E">E</option>
+                        <option value="F">F</option>
+                        <option value="G">G</option>
+                    </select>
+                </div>
+            </div>
+
+            <button id="loginBtn"><span id="loginText">Sign In</span></button>
+            <button id="registerBtn" class="secondary"><span id="regText">Create Account</span></button>
+            <a href="#" id="forgotPassLink">Forgot Password?</a>
         </div>
     </div>
 
-    <nav>
-        <div class="nav-content">
-            <div class="logo"><strong>EduConnect</strong></div>
-            <button id="roleBtn" class="nav-link">Logout</button>
+    <header>
+        <div class="nav-container">
+            <h2>School Feed</h2>
+            <button id="roleBtn">Logout</button>
         </div>
-    </nav>
+    </header>
 
     <main>
-          <section id="teacher-tools" class="post-box hidden">
-              <h3>New Announcement</h3>
-                <textarea id="msgInput" rows="3" placeholder="What's happening in class today?"></textarea>
-                  <div class="url-input-container">
-                      <input type="text" id="imgUrlInput" placeholder="Paste image link here (optional)...">
-                  </div>
-                  <div class="input-footer">
-                      <span id="charCounter">0 / 280</span>
-                  <button id="sendBtn">
-                      <span id="sendText">Broadcast to Parents</span>
-                  </button>
-              </div>
-       </section>
-    <div id="announcements-container">
-    </div>
+        <section id="teacher-tools" class="post-box hidden">
+            <h3>New Announcement</h3>
+            
+            <div class="target-selection">
+                <select id="gradeSelect">
+                    </select>
+                <select id="classSelect">
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                    <option value="E">E</option>
+                    <option value="F">F</option>
+                    <option value="G">G</option>
+                </select>
+            </div>
 
-        <section id="feed-container">
-            <h3>Classroom Updates</h3>
-            <div id="message-container">
-                </div>
+            <textarea id="msgInput" rows="3" placeholder="What's happening in class today?"></textarea>
+            
+            <div class="url-input-container">
+                <input type="text" id="imgUrlInput" placeholder="Paste image link here (optional)...">
+            </div>
+
+            <div class="input-footer">
+                <span id="charCounter">0 / 280</span>
+                <button id="sendBtn">
+                    <span id="sendText">Broadcast to Parents</span>
+                </button>
+            </div>
         </section>
+
+        <div id="announcements-container">
+            </div>
     </main>
 
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    
     <script src="script.js"></script>
-
 </body>
-
 </html>
 
 
