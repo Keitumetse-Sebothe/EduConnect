@@ -1,22 +1,21 @@
-// 1. FIREBASE CONFIGURATION
+// --- SECTION 1: FIREBASE CONFIGURATION ---
 const firebaseConfig = {
-  apiKey: "AIzaSyBigSfU_U7_PVbdOw0SCHO2b14T5hDxwK4",
-  authDomain: "educonnect-a6c88.firebaseapp.com",
-  projectId: "educonnect-a6c88",
-  storageBucket: "educonnect-a6c88.firebasestorage.app",
-  messagingSenderId: "700869703231",
-  appId: "1:700869703231:web:650dd0cd48399027566a8a",
-  measurementId: "G-LCVFHV2LRM"
+    apiKey: "AIzaSyBigSfU_U7_PVbdOw0SCHO2b14T5hDxwK4",
+    authDomain: "educonnect-a6c88.firebaseapp.com",
+    projectId: "educonnect-a6c88",
+    storageBucket: "educonnect-a6c88.firebasestorage.app",
+    messagingSenderId: "700869703231",
+    appId: "1:700869703231:web:650dd0cd48399027566a8a",
+    measurementId: "G-LCVFHV2LRM"
 };
 
-// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// 2. ELEMENT SELECTORS
+// --- SECTION 2: ELEMENT SELECTORS ---
 const authScreen = document.getElementById('auth-screen');
-const teacherTools = document.getElementById('teacher-tools'); // Corrected to match your HTML
+const teacherTools = document.getElementById('teacher-tools');
 const roleBtn = document.getElementById('roleBtn');
 const msgInput = document.getElementById('msgInput');
 const imgUrlInput = document.getElementById('imgUrlInput');
@@ -25,13 +24,25 @@ const sendText = document.getElementById('sendText');
 const charCounter = document.getElementById('charCounter');
 const forgotPassLink = document.getElementById('forgotPassLink');
 
-// State Management
-let userRole = localStorage.getItem('userRole') || 'parent';
+// --- SECTION 3: DROP-DOWN AUTOMATION ---
+function populateGrades(elementId) {
+    const select = document.getElementById(elementId);
+    if (!select) return;
+    select.innerHTML = ""; 
+    for (let i = 1; i <= 12; i++) {
+        let opt = document.createElement('option');
+        opt.value = i;
+        opt.innerHTML = "Grade " + i;
+        select.appendChild(opt);
+    }
+}
+// Run immediately
+populateGrades('gradeSelect'); // Teacher section
+populateGrades('regGrade');    // Registration section
 
-// 3. AUTHENTICATION WATCHER
+// --- SECTION 4: AUTHENTICATION WATCHER ---
 auth.onAuthStateChanged(user => {
     if (user) {
-        console.log("Welcome:", user.email);
         authScreen.style.display = 'none';
         applyRoleUI();
         setupRealtimeFeed();
@@ -42,101 +53,100 @@ auth.onAuthStateChanged(user => {
     }
 });
 
-// 4. AUTHENTICATION HANDLERS
+// --- SECTION 5: LOGIN & REGISTRATION ---
 window.handleAuth = (type) => {
     const email = document.getElementById('emailInput').value;
     const pass = document.getElementById('passInput').value;
+    const userRole = document.getElementById('roleSelect').value;
     
-    const btn = type === 'register' ? document.getElementById('registerBtn') : document.getElementById('loginBtn');
-    const spinner = type === 'register' ? document.getElementById('regSpinner') : document.getElementById('loginSpinner');
-    const btnText = type === 'register' ? document.getElementById('regText') : document.getElementById('loginText');
+    // Capture Grade/Class for Parents
+    const g = document.getElementById('regGrade').value;
+    const c = document.getElementById('regClass').value;
+    const userClass = `Grade ${g}${c}`;
 
-    if (!email || !pass) return alert("Please fill in all fields.");
+    if (!email || !pass) return alert("Fields cannot be empty.");
 
-    btn.disabled = true;
-    if (spinner) spinner.classList.remove('hidden');
-    if (btnText) btnText.innerText = type === 'register' ? "Creating..." : "Signing in...";
-
-    userRole = document.getElementById('roleSelect').value;
     localStorage.setItem('userRole', userRole);
+    localStorage.setItem('userClass', userClass);
 
     const authAction = type === 'register' 
         ? auth.createUserWithEmailAndPassword(email, pass) 
         : auth.signInWithEmailAndPassword(email, pass);
 
-    authAction.catch(e => {
-        btn.disabled = false;
-        if (spinner) spinner.classList.add('hidden');
-        if (btnText) btnText.innerText = type === 'register' ? "Create Account" : "Sign In";
-        alert(e.message);
-    });
+    authAction.catch(e => alert(e.message));
 };
 
 document.getElementById('registerBtn').onclick = () => window.handleAuth('register');
 document.getElementById('loginBtn').onclick = () => window.handleAuth('login');
 
-// 5. FORGOT PASSWORD
-forgotPassLink.addEventListener('click', (e) => {
-    e.preventDefault();
-    const email = document.getElementById('emailInput').value;
-    if (!email) return alert("Enter your email first!");
-    auth.sendPasswordResetEmail(email)
-        .then(() => alert("Reset link sent to " + email))
-        .catch(err => alert(err.message));
-});
-
-// 6. LOGOUT
+// --- SECTION 6: LOGOUT LOGIC ---
 roleBtn.onclick = () => {
     localStorage.removeItem('userRole');
+    localStorage.removeItem('userClass');
     auth.signOut();
 };
 
-// 7. DATA FEED (The Real-Time Engine)
+// --- SECTION 7: PASSWORD RESET ---
+forgotPassLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    const email = document.getElementById('emailInput').value;
+    if (!email) return alert("Enter email first!");
+    auth.sendPasswordResetEmail(email).then(() => alert("Email sent!"));
+});
+
+// --- SECTION 8: REAL-TIME DATA FEED (Privacy Filtered) ---
 function setupRealtimeFeed() {
     const container = document.getElementById('announcements-container');
+    const userRole = localStorage.getItem('userRole');
+    const userClass = localStorage.getItem('userClass');
+
     if (!container) return;
 
-    db.collection("announcements").orderBy("timestamp", "desc")
+    let query = db.collection("announcements");
+
+    // Parent Privacy Filter: Only show posts matching their child's class
+    if (userRole === 'parent' && userClass) {
+        query = query.where("category", "==", userClass);
+    }
+
+    query.orderBy("timestamp", "desc")
         .onSnapshot(snapshot => {
             container.innerHTML = "";
-            
-            if (snapshot.empty) {
-                container.innerHTML = `<p style="text-align:center;color:#888;">No updates yet.</p>`;
-                return;
-            }
-
             snapshot.forEach(doc => {
                 const data = doc.data();
                 const id = doc.id;
                 const time = data.timestamp ? data.timestamp.toDate().toLocaleString() : "Just now";
-                
                 const imageTag = data.image ? `<img src="${data.image}" class="feed-img">` : '';
-                const likes = data.likes || 0; 
-                const likeBtn = `<button onclick="likeMsg('${id}', ${likes})" class="like-btn">❤️ <span>${likes}</span></button>`;
+                const likes = data.likes || 0;
                 
                 const deleteBtn = (userRole === 'teacher') 
-                    ? `<button onclick="deleteMsg('${id}')" class="delete-btn">Delete</button>` 
-                    : '';
+                    ? `<button onclick="deleteMsg('${id}')" class="delete-btn">Delete</button>` : '';
 
                 container.insertAdjacentHTML('beforeend', `
                     <div class="card">
-                        <small>Update • ${time}</small>
+                        <div class="card-header">
+                            <span class="badge">${data.category}</span>
+                            <small>${time}</small>
+                        </div>
                         <p>${data.text}</p>
                         ${imageTag}
                         <div class="card-footer">
-                            ${likeBtn} 
+                            <button onclick="likeMsg('${id}', ${likes})" class="like-btn">❤️ <span>${likes}</span></button>
                             ${deleteBtn}
                         </div>
                     </div>
                 `);
             });
-        });
+        }, error => { console.error("Index required! Check console log for link."); });
 }
 
-// 8. SEND MESSAGE
+// --- SECTION 9: BROADCAST MESSAGE (Teacher Only) ---
 sendBtn.addEventListener('click', async () => {
     const text = msgInput.value.trim();
     const imageUrl = imgUrlInput.value.trim();
+    const grade = document.getElementById('gradeSelect').value;
+    const letter = document.getElementById('classSelect').value;
+    const fullCategory = `Grade ${grade}${letter}`;
     
     if (text || imageUrl) {
         sendBtn.disabled = true;
@@ -146,76 +156,52 @@ sendBtn.addEventListener('click', async () => {
             await db.collection("announcements").add({
                 text: text,
                 image: imageUrl,
+                category: fullCategory,
                 likes: 0,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
 
-            // Success Visuals
             sendBtn.style.backgroundColor = "#28a745"; 
             sendText.innerHTML = "✓ Sent!";
-            
             msgInput.value = "";
             imgUrlInput.value = "";
-            charCounter.innerText = "0 / 280";
             
             setTimeout(() => {
                 sendBtn.disabled = false;
                 sendBtn.style.backgroundColor = ""; 
                 sendText.innerHTML = "Broadcast to Parents";
             }, 2000);
-
         } catch (error) {
-            console.error("Error:", error);
-            alert("Oops! Message didn't send.");
+            alert("Error sending!");
             sendBtn.disabled = false;
-            sendText.innerText = "Broadcast to Parents";
         }
     }
 });
 
-// 9. DELETE FUNCTION
+// --- SECTION 10: LIKE FUNCTIONALITY ---
+window.likeMsg = async (id, currentLikes) => {
+    await db.collection("announcements").doc(id).update({ likes: currentLikes + 1 });
+};
+
+// --- SECTION 11: DELETE FUNCTIONALITY ---
 window.deleteMsg = (id) => {
-    if(confirm("Permanently delete this?")) {
+    if(confirm("Delete this post?")) {
         db.collection("announcements").doc(id).delete();
     }
 };
 
-// 10. LIKE FUNCTION
-window.likeMsg = async (id, currentLikes) => {
-    try {
-        await db.collection("announcements").doc(id).update({
-            likes: currentLikes + 1
-        });
-    } catch (error) {
-        console.error("Error liking:", error);
-    }
-};
-
-// 11. UI UTILITY
+// --- SECTION 12: UI UTILITY (Character Counter & Role View) ---
 function applyRoleUI() {
+    const userRole = localStorage.getItem('userRole');
     if (userRole === 'teacher') {
         teacherTools.classList.remove('hidden');
         roleBtn.innerText = "Logout (Teacher)";
     } else {
         teacherTools.classList.add('hidden');
-        roleBtn.innerText = "Logout (Parent)";
+        roleBtn.innerText = `Logout (${localStorage.getItem('userClass')})`;
     }
 }
 
-// 12. CHARACTER COUNTER
 msgInput.addEventListener('input', () => {
-    const length = msgInput.value.length;
-    charCounter.innerText = length + " / 280";
-    if (length > 280) {
-        charCounter.style.color = "red";
-        sendBtn.disabled = true;
-    } else {
-        charCounter.style.color = "#888";
-        sendBtn.disabled = false;
-    }
+    charCounter.innerText = `${msgInput.value.length} / 280`;
 });
-
-
-
-
-
