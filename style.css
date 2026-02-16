@@ -317,27 +317,23 @@ button:disabled {
 
 .pulse {
     animation: pulse 1.5s infinite;
-
 }
 
-/* --- New Image Link Styles --- */
 .url-input-container {
     margin: 10px 0;
 }
 
 #imgUrlInput {
     width: 100%;
-    padding: 10px 12px;
+    padding: 8px 12px;
     border: 1px solid #ddd;
     border-radius: 8px;
     font-size: 0.9rem;
     outline: none;
-    box-sizing: border-box; /* Makes sure padding doesn't push it off screen */
 }
 
 #imgUrlInput:focus {
     border-color: #007bff;
-    background-color: #f8fbff;
 }
 
 .feed-img {
@@ -390,4 +386,39 @@ button:disabled {
 
 #sendBtn {
     transition: background-color 0.4s ease;
+}
+
+/* --- SECTION 12: UI COMPONENTS --- */
+
+.badge {
+    background-color: #e8f0fe; /* Light professional blue */
+    color: #1a73e8;            /* Google-style blue */
+    padding: 4px 12px;
+    border-radius: 15px;       /* Rounded pill shape */
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-block;
+    margin-bottom: 8px;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.target-selection, #class-picker {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.target-selection select, #class-picker select {
+    flex: 1;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
 }
