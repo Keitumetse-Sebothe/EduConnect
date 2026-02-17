@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduConnect</title>
+    <title>EduConnect | School Feed</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -35,8 +35,8 @@
                 </div>
             </div>
 
-            <button id="loginBtn"><span id="loginText">Sign In</span></button>
-            <button id="registerBtn" class="secondary"><span id="regText">Create Account</span></button>
+            <button id="loginBtn">Sign In</button>
+            <button id="registerBtn" class="secondary">Create Account</button>
             <a href="#" id="forgotPassLink">Forgot Password?</a>
         </div>
     </div>
@@ -49,10 +49,11 @@
     </header>
 
     <main>
+        <div id="search-container" class="hidden">
+             <input type="text" id="searchInput" placeholder="🔍 Search announcements...">
+        </div>
+
         <section id="teacher-tools" class="post-box hidden">
-            <div id="search-container" class="hidden">
-                 <input type="text" id="searchInput" placeholder="🔍 Search announcements (e.g. 'homework', 'trip')...">
-            </div>
             <h3>New Announcement</h3>
             
             <div class="target-selection">
@@ -94,6 +95,3 @@
     <script src="script.js"></script>
 </body>
 </html>
-
-
-
