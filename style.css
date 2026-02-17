@@ -273,3 +273,22 @@ textarea {
 
 #charCounter { font-size: 0.8rem; color: #888; }
 
+#search-container {
+    margin-bottom: 20px;
+}
+
+#searchInput {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    font-size: 1rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    outline: none;
+}
+
+#searchInput:focus {
+    border-color: var(--accent);
+}
+
+
