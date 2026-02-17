@@ -42,12 +42,24 @@ populateGrades('regGrade');    // Registration section
 
 // --- SECTION 4: AUTHENTICATION WATCHER ---
 auth.onAuthStateChanged(user => {
+    const searchContainer = document.getElementById('search-container');
+    
     if (user) {
+        // USER LOGGED IN
         authScreen.style.display = 'none';
+        
+        // Show the search bar now that we are inside the app
+        if (searchContainer) searchContainer.classList.remove('hidden');
+        
         applyRoleUI();
         setupRealtimeFeed();
     } else {
+        // USER LOGGED OUT
         authScreen.style.display = 'flex';
+        
+        // Hide the search bar again when logged out
+        if (searchContainer) searchContainer.classList.add('hidden');
+        
         const feed = document.getElementById('announcements-container');
         if (feed) feed.innerHTML = "";
     }
@@ -204,4 +216,22 @@ function applyRoleUI() {
 
 msgInput.addEventListener('input', () => {
     charCounter.innerText = `${msgInput.value.length} / 280`;
+});
+
+/* --- SECTION 13: SEARCH FUNCTIONALITY --- */
+const searchInput = document.getElementById('searchInput');
+
+searchInput.addEventListener('input', (e) => {
+    const term = e.target.value.toLowerCase();
+    const cards = document.querySelectorAll('.card');
+
+    cards.forEach(card => {
+        const text = card.querySelector('p').innerText.toLowerCase();
+        // If the text includes the search term, show it; otherwise, hide it
+        if (text.includes(term)) {
+            card.style.display = "block";
+        } else {
+            card.style.display = "none";
+        }
+    });
 });
