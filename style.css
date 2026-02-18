@@ -9,11 +9,21 @@
     --text: #333;          /* Deep Gray - Readable Text */
     --danger: #e74c3c;     /* Soft Red - Delete & Alerts */
     --success: #28a745;    /* Green - Post Success */
+    --card-bg: var(--white);
+}
+
+/* DARK MODE VARIABLE OVERRIDES */
+body.dark-theme {
+    --bg: #121212;
+    --card-bg: #1e1e1e;
+    --white: #1e1e1e;
+    --text: #e0e0e0;
+    --primary: #000000;
 }
 
 * {
     box-sizing: border-box;
-    transition: all 0.2s ease-in-out;
+    transition: background 0.3s ease, color 0.3s ease, border 0.3s ease;
 }
 
 body {
@@ -31,7 +41,7 @@ body {
     position: fixed;
     top: 0; left: 0;
     width: 100%; height: 100%;
-    background: var(--primary);
+    background: #2c3e50; /* Hardcoded to keep auth slate even in dark mode startup */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -39,7 +49,7 @@ body {
 }
 
 .auth-card {
-    background: var(--white);
+    background: white; /* Auth always stays light for readability */
     padding: 35px;
     border-radius: 16px;
     width: 90%;
@@ -50,7 +60,7 @@ body {
 
 .auth-card h1 {
     margin-top: 0;
-    color: var(--primary);
+    color: #2c3e50;
     font-size: 1.8rem;
 }
 
@@ -62,6 +72,8 @@ body {
     border: 1px solid #ddd;
     border-radius: 8px;
     font-size: 1rem;
+    background: white;
+    color: #333;
 }
 
 #loginBtn {
@@ -108,6 +120,26 @@ header {
     align-items: center;
 }
 
+.nav-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.icon-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    font-size: 1.2rem;
+    padding: 4px 8px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.icon-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
 #roleBtn {
     background: rgba(255,255,255,0.15);
     color: white;
@@ -130,11 +162,12 @@ main {
 }
 
 .post-box {
-    background: var(--white);
+    background: var(--card-bg);
     padding: 24px;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     margin-bottom: 30px;
+    border: 1px solid rgba(0,0,0,0.05);
 }
 
 .target-selection, #class-picker {
@@ -148,6 +181,8 @@ main {
     padding: 10px;
     border-radius: 8px;
     border: 1px solid #ddd;
+    background: var(--card-bg);
+    color: var(--text);
 }
 
 textarea {
@@ -158,6 +193,8 @@ textarea {
     font-family: inherit;
     font-size: 1rem;
     resize: none;
+    background: var(--card-bg);
+    color: var(--text);
 }
 
 #imgUrlInput {
@@ -167,6 +204,8 @@ textarea {
     border-radius: 8px;
     margin-top: 10px;
     outline: none;
+    background: var(--card-bg);
+    color: var(--text);
 }
 
 #imgUrlInput:focus { border-color: var(--accent); }
@@ -194,7 +233,7 @@ textarea {
    5. FEED & CARDS
    ========================================================================== */
 .card {
-    background: var(--white);
+    background: var(--card-bg);
     padding: 20px;
     border-radius: 12px;
     margin-bottom: 20px;
@@ -224,6 +263,12 @@ textarea {
     font-weight: 700;
 }
 
+/* Dark theme badge adjustment */
+body.dark-theme .badge {
+    background: #1a273a;
+    color: #4dabf7;
+}
+
 .feed-img {
     width: 100%;
     max-height: 450px;
@@ -240,8 +285,10 @@ textarea {
     justify-content: space-between;
     align-items: center;
     padding-top: 12px;
-    border-top: 1px solid #eee;
+    border-top: 1px solid rgba(0,0,0,0.1);
 }
+
+body.dark-theme .card-footer { border-top-color: #333; }
 
 .like-btn {
     background: #fff0f0;
@@ -285,6 +332,8 @@ textarea {
     font-size: 1rem;
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     outline: none;
+    background: var(--card-bg);
+    color: var(--text);
 }
 
 #searchInput:focus {
@@ -295,9 +344,9 @@ textarea {
     text-align: center;
     padding: 40px 20px;
     color: #888;
-    background: white;
+    background: var(--card-bg);
     border-radius: 12px;
-    border: 2px dashed #ddd; /* Makes it look like a placeholder */
+    border: 2px dashed #ddd; 
     margin-top: 20px;
 }
 
@@ -311,3 +360,116 @@ textarea {
     font-size: 1.1rem;
     margin: 0;
 }
+
+/* ==========================================================================
+   SETTINGS MODAL STYLES
+   ========================================================================== */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.7); 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000; 
+}
+
+.modal-content {
+    background: var(--card-bg);
+    color: var(--text);
+    width: 90%;
+    max-width: 400px;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    padding-bottom: 10px;
+}
+
+body.dark-theme .modal-header { border-bottom-color: #444; }
+
+.close-x {
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    cursor: pointer;
+    color: #999;
+}
+
+.modal-footer {
+    margin-top: 20px;
+    text-align: right;
+}
+
+#saveSettingsBtn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.settings-group h4 {
+    margin: 15px 0 10px 0;
+    font-size: 0.8rem;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.setting-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+}
+
+.setting-row span {
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+hr {
+    border: 0;
+    border-top: 1px solid rgba(0,0,0,0.1);
+    margin: 15px 0;
+}
+
+body.dark-theme hr { border-top-color: #444; }
+
+/* ==========================================================================
+   DARK THEME OVERRIDES (Specific Elements)
+   ========================================================================== */
+body.dark-theme header, 
+body.dark-theme #search-container {
+    background: #1f1f1f;
+    border-bottom: 1px solid #333;
+}
+
+/* This fixes the .post-card vs .card issue */
+body.dark-theme .card, 
+body.dark-theme .post-box {
+    background: #1e1e1e;
+    border: 1px solid #333;
+    color: white;
+}
+
+body.dark-theme .modal-content {
+    background: #252525;
+    color: white;
+}
+
+body.dark-theme input,
+body.dark-theme select,
+body.dark-theme textarea {
+    border-color: #444;
+}
+
