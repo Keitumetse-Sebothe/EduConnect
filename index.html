@@ -42,10 +42,13 @@
     </div>
 
     <header>
-        <div class="nav-container">
-            <h2>School Feed</h2>
+      <div class="nav-container">
+        <h2>School Feed</h2>
+        <div class="nav-actions">
+            <button id="settingsToggle" class="icon-btn" title="Settings">⚙️</button>
             <button id="roleBtn">Logout</button>
         </div>
+      </div>
     </header>
 
     <main>
@@ -87,6 +90,48 @@
         <div id="announcements-container">
             </div>
     </main>
+
+    <div id="settings-modal" class="modal-overlay hidden">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>App Settings</h3>
+            <button id="closeSettings" class="close-x">&times;</button>
+        </div>
+        
+    <div class="modal-body">
+    <div class="settings-group">
+        <h4>Account Identity</h4>
+        <div class="setting-row">
+            <span>Logged in as:</span>
+            <span id="displayRole" class="badge">---</span>
+        </div>
+        <div class="setting-row">
+            <span>Target Class:</span>
+            <span id="displayClass" class="badge">---</span>
+        </div>
+    </div>
+
+    <hr>
+
+    <div class="settings-group">
+        <h4>Preferences</h4>
+        <div class="setting-row">
+            <label for="darkModeToggle">Dark Mode</label>
+            <input type="checkbox" id="darkModeToggle">
+        </div>
+    </div>
+
+    <div class="setting-row" id="teacher-only-setting" style="display: none;">
+           <label for="toggleTeacherTools">Show Teacher Tools</label>
+           <input type="checkbox" id="toggleTeacherTools" checked>
+    </div>
+</div>
+
+        <div class="modal-footer">
+            <button id="saveSettingsBtn">Close</button>
+        </div>
+    </div>
+</div>
 
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
