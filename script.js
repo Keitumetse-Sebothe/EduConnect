@@ -1,4 +1,16 @@
-// --- SECTION 1: FIREBASE CONFIGURATION ---
+/* ==========================================================================
+   EDUCONNECT - COMPLETE STABLE SCRIPT (Wednesday Final)
+   ========================================================================== */
+
+// --- 1. INITIALIZATION & THEME MEMORY ---
+const savedTheme = localStorage.getItem('theme');
+const bodyElement = document.body;
+
+if (savedTheme === 'dark') {
+    bodyElement.classList.add('dark-theme');
+}
+
+// --- 2. FIREBASE CONFIGURATION ---
 const firebaseConfig = {
     apiKey: "AIzaSyBigSfU_U7_PVbdOw0SCHO2b14T5hDxwK4",
     authDomain: "educonnect-a6c88.firebaseapp.com",
@@ -13,7 +25,7 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// --- SECTION 2: ELEMENT SELECTORS ---
+// --- 3. ELEMENT SELECTORS ---
 const authScreen = document.getElementById('auth-screen');
 const teacherTools = document.getElementById('teacher-tools');
 const roleBtn = document.getElementById('roleBtn');
@@ -23,20 +35,27 @@ const sendBtn = document.getElementById('sendBtn');
 const sendText = document.getElementById('sendText');
 const charCounter = document.getElementById('charCounter');
 const forgotPassLink = document.getElementById('forgotPassLink');
+const settingsToggle = document.getElementById('settingsToggle');
+const settingsModal = document.getElementById('settings-modal');
+const closeSettings = document.getElementById('closeSettings');
+const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+const darkModeToggle = document.getElementById('darkModeToggle');
+const teacherToggle = document.getElementById('toggleTeacherTools');
 
-// --- SECTION 3: DROP-DOWN AUTOMATION (Includes Grade R) ---
+// Set toggle state on load
+if (darkModeToggle && savedTheme === 'dark') darkModeToggle.checked = true;
+
+// --- 4. DROP-DOWN AUTOMATION ---
 function populateGrades(elementId) {
     const select = document.getElementById(elementId);
     if (!select) return;
     select.innerHTML = ""; 
     
-    // Explicitly add Grade R first
     let optR = document.createElement('option');
     optR.value = "R";
     optR.innerHTML = "Grade R";
     select.appendChild(optR);
 
-    // Loop through Grades 1 to 12
     for (let i = 1; i <= 12; i++) {
         let opt = document.createElement('option');
         opt.value = i;
@@ -47,14 +66,12 @@ function populateGrades(elementId) {
 populateGrades('gradeSelect');
 populateGrades('regGrade');
 
-// --- SECTION 4: AUTHENTICATION WATCHER ---
+// --- 5. AUTHENTICATION WATCHER ---
 auth.onAuthStateChanged(user => {
     const searchContainer = document.getElementById('search-container');
-    
     if (user) {
         authScreen.style.display = 'none';
         if (searchContainer) searchContainer.classList.remove('hidden');
-        applyRoleUI();
         setupRealtimeFeed();
     } else {
         authScreen.style.display = 'flex';
@@ -64,14 +81,14 @@ auth.onAuthStateChanged(user => {
     }
 });
 
-// --- SECTION 5: LOGIN & REGISTRATION ---
+// --- 6. LOGIN & REGISTRATION ---
 window.handleAuth = (type) => {
     const email = document.getElementById('emailInput').value;
     const pass = document.getElementById('passInput').value;
     const userRole = document.getElementById('roleSelect').value;
     const g = document.getElementById('regGrade').value;
     const c = document.getElementById('regClass').value;
-    const userClass = `Grade ${g}${c}`; // Consistent naming (e.g., Grade RA)
+    const userClass = `Grade ${g}${c}`;
 
     if (!email || !pass) return alert("Fields cannot be empty.");
 
@@ -88,13 +105,12 @@ window.handleAuth = (type) => {
 document.getElementById('registerBtn').onclick = () => window.handleAuth('register');
 document.getElementById('loginBtn').onclick = () => window.handleAuth('login');
 
-// --- SECTION 6: LOGOUT LOGIC ---
+// --- 7. LOGOUT & PASSWORD RESET ---
 roleBtn.onclick = () => {
     localStorage.clear();
     auth.signOut();
 };
 
-// --- SECTION 7: PASSWORD RESET ---
 forgotPassLink.addEventListener('click', (e) => {
     e.preventDefault();
     const email = document.getElementById('emailInput').value;
@@ -102,7 +118,7 @@ forgotPassLink.addEventListener('click', (e) => {
     auth.sendPasswordResetEmail(email).then(() => alert("Email sent!"));
 });
 
-// --- SECTION 8: REAL-TIME DATA FEED ---
+// --- 8. REAL-TIME DATA FEED ---
 function setupRealtimeFeed() {
     const container = document.getElementById('announcements-container');
     const userRole = localStorage.getItem('userRole');
@@ -112,25 +128,18 @@ function setupRealtimeFeed() {
 
     let query = db.collection("announcements");
 
-    // Filter by class if the user is a parent
     if (userRole === 'parent' && userClass) {
         query = query.where("category", "==", userClass);
     }
 
     query.orderBy("timestamp", "desc").onSnapshot(snapshot => {
-        container.innerHTML = ""; // Clear feed for refresh
-
+        container.innerHTML = ""; 
         snapshot.forEach(doc => {
             const data = doc.data();
-            
-            // Secondary security check for data integrity
-            if (userRole === 'parent' && data.category !== userClass) return;
-
             const id = doc.id;
             const time = data.timestamp ? data.timestamp.toDate().toLocaleString() : "Just now";
             const imageTag = data.image ? `<img src="${data.image}" class="feed-img">` : '';
             const likes = data.likes || 0;
-            
             const deleteBtn = (userRole === 'teacher') 
                 ? `<button onclick="deleteMsg('${id}')" class="delete-btn">Delete</button>` : '';
 
@@ -152,28 +161,24 @@ function setupRealtimeFeed() {
     });
 }
 
-// --- SECTION 9: BROADCAST MESSAGE (Teacher Only) ---
+// --- 9. TEACHER BROADCAST ---
 sendBtn.addEventListener('click', async () => {
     const text = msgInput.value.trim();
     const imageUrl = imgUrlInput.value.trim();
     const grade = document.getElementById('gradeSelect').value;
     const letter = document.getElementById('classSelect').value;
-    const fullCategory = `Grade ${grade}${letter}`; // Matches userClass format
+    const fullCategory = `Grade ${grade}${letter}`;
     
     if (text || imageUrl) {
         sendBtn.disabled = true;
         sendText.innerText = "Posting...";
         try {
             await db.collection("announcements").add({
-                text: text,
-                image: imageUrl,
-                category: fullCategory,
-                likes: 0,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                text: text, image: imageUrl, category: fullCategory,
+                likes: 0, timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
             sendText.innerHTML = "✓ Sent!";
-            msgInput.value = "";
-            imgUrlInput.value = "";
+            msgInput.value = ""; imgUrlInput.value = "";
             charCounter.innerText = "0 / 280";
             setTimeout(() => {
                 sendBtn.disabled = false;
@@ -186,39 +191,71 @@ sendBtn.addEventListener('click', async () => {
     }
 });
 
-// --- SECTION 10: LIKE & DELETE ---
+// --- 10. LIKE & DELETE ---
 window.likeMsg = (id, currentLikes) => {
     db.collection("announcements").doc(id).update({ likes: currentLikes + 1 });
 };
-
 window.deleteMsg = (id) => {
-    if (confirm("Are you sure you want to delete this post?")) {
-        db.collection("announcements").doc(id).delete();
-    }
+    if (confirm("Are you sure?")) db.collection("announcements").doc(id).delete();
 };
 
-// --- SECTION 11: UI UTILITY ---
-function applyRoleUI() {
-    const userRole = localStorage.getItem('userRole');
-    if (userRole === 'teacher') {
-        teacherTools.classList.remove('hidden');
-        roleBtn.innerText = "Logout (Teacher)";
-    } else {
-        teacherTools.classList.add('hidden');
-        roleBtn.innerText = `Logout (${localStorage.getItem('userClass')})`;
-    }
+// --- 11. SETTINGS & UI UTILITY ---
+
+// Open Modal
+if (settingsToggle) {
+    settingsToggle.onclick = () => {
+        const role = localStorage.getItem('userRole') || 'User';
+        const uClass = localStorage.getItem('userClass') || 'N/A';
+
+        document.getElementById('displayRole').innerText = role;
+        document.getElementById('displayClass').innerText = uClass;
+
+        const teacherRow = document.getElementById('teacher-only-setting');
+        if (teacherRow) {
+            teacherRow.style.display = (role.toLowerCase() === 'teacher') ? 'flex' : 'none';
+        }
+        settingsModal.classList.remove('hidden');
+    };
 }
 
-msgInput.addEventListener('input', () => {
-    charCounter.innerText = `${msgInput.value.length} / 280`;
-});
+// Close Modal logic
+const hideSettings = () => settingsModal.classList.add('hidden');
+if (closeSettings) closeSettings.onclick = hideSettings;
+if (saveSettingsBtn) saveSettingsBtn.onclick = hideSettings;
+window.onclick = (e) => { if (e.target == settingsModal) hideSettings(); };
 
-// --- SECTION 12: SEARCH ---
-document.getElementById('searchInput').addEventListener('input', (e) => {
-    const term = e.target.value.toLowerCase();
-    const cards = document.querySelectorAll('.card');
-    cards.forEach(card => {
-        const text = card.querySelector('p').innerText.toLowerCase();
-        card.style.display = text.includes(term) ? "block" : "none";
+// Dark Mode Toggle Logic
+if (darkModeToggle) {
+    darkModeToggle.onchange = (e) => {
+        if (e.target.checked) {
+            bodyElement.classList.add('dark-theme');
+            localStorage.setItem('theme', 'dark');
+        } else {
+            bodyElement.classList.remove('dark-theme');
+            localStorage.setItem('theme', 'light');
+        }
+    };
+}
+
+// Teacher Tools Toggle Logic
+if (teacherToggle) {
+    teacherToggle.onchange = (e) => {
+        if (teacherTools) {
+            if (e.target.checked) teacherTools.classList.remove('hidden');
+            else teacherTools.classList.add('hidden');
+        }
+    };
+}
+
+// --- 12. SEARCH LOGIC ---
+const searchInp = document.getElementById('searchInput');
+if (searchInp) {
+    searchInp.addEventListener('input', (e) => {
+        const term = e.target.value.toLowerCase();
+        const cards = document.querySelectorAll('.card');
+        cards.forEach(card => {
+            const text = card.querySelector('p').innerText.toLowerCase();
+            card.style.display = text.includes(term) ? "block" : "none";
+        });
     });
-});
+}
